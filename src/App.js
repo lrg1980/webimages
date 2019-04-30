@@ -2,15 +2,17 @@ import React, { Component } from 'react';
 import imagen from './img/logo.jpg';
 import Buscador from './componentes/Buscador';
 import Resultado from "./componentes/Resultado";
+import './App.css';
 
 class App extends Component {
   state = {
     termino: '',
     imagenes: [],
-    pagina: ''
+    pagina: '',
+    cargando: false
   }
 
-  consultarAPI = () => {
+  consultarAPI = async () => {
     // console.log('desde consultar API')
     const termino = this.state.termino;
     const pagina = this.state.pagina;
@@ -18,9 +20,21 @@ class App extends Component {
     const url = `https://pixabay.com/api/?key=12352300-07f3f5b2aa7969ce6a39f317f&q=${termino}&per_page=30&page=${pagina}`;
 
     // console.log(url);
-    fetch(url)
-      .then(respuesta => respuesta.json())
-      .then(resultado => this.setState({imagenes: resultado.hits}) )
+    await fetch(url)
+      .then(respuesta => {
+        this.setState({
+          cargando: true
+        });
+        return respuesta.json()
+      } )
+      .then(resultado => {
+        setTimeout(() => {
+          this.setState({
+            imagenes: resultado.hits,
+            cargando: false
+          })
+        }, 1000);
+      })
   }
 
   datosBusqueda = (termino) => {
@@ -47,6 +61,7 @@ class App extends Component {
       pagina
     }, () => {
         this.consultarAPI();
+        this.scroll();
     });
   }
   paginaAdelante = () => {
@@ -56,10 +71,31 @@ class App extends Component {
     this.setState({
       pagina
     }, () => {
-      this.consultarAPI();
+        this.consultarAPI();
+        this.scroll();
     });
   }
+  scroll = () => {
+    const elemento = document.querySelector('.jumbotron');
+    elemento.scrollIntoView('smooth', 'start');
+  }
   render() {
+    const cargando = this.state.cargando;
+    let resultado;
+    if(cargando) {
+      resultado = <div className="spinner">
+                    <div className="dot1"></div>
+                    <div className="dot2"></div>
+                  </div>
+    } else {
+      resultado = <Resultado
+                    imagenes={this.state.imagenes}
+                    paginaAtras={this.paginaAtras}
+                    paginaAdelante={this.paginaAdelante}  
+                  />
+
+    }
+      
     return (
       <div className="app container">
         <div className="jumbotron">
@@ -78,13 +114,7 @@ class App extends Component {
           </div>
         </div>
         <div className="row justify-content-center">
-          <Resultado
-            imagenes={this.state.imagenes}
-            paginaAtras={this.paginaAtras}
-            paginaAdelante={this.paginaAdelante}
-            
-          />
-
+          {resultado}
         </div>
       </div>    
     );
