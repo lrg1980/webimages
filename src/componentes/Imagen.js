@@ -3,7 +3,7 @@ import React from 'react';
 const Imagen = (props) => {
      const { largeImageURL, likes, previewURL, tags, views } = props.imagen; 
      return (
-          <div className="col-6 col-sm-4 col-md-3 mb-3">
+          <div className="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
                <div className="card">
                     <a href={largeImageURL} target="_blank" rel="noopener noreferrer"> 
                          <img className="card-img-top" src={previewURL} alt={tags} />

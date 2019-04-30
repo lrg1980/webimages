@@ -6,13 +6,16 @@ import Resultado from "./componentes/Resultado";
 class App extends Component {
   state = {
     termino: '',
-    imagenes: []
+    imagenes: [],
+    pagina: ''
   }
 
   consultarAPI = () => {
     // console.log('desde consultar API')
     const termino = this.state.termino;
-    const url = `https://pixabay.com/api/?key=12352300-07f3f5b2aa7969ce6a39f317f&q=${termino}&per_page=30`;
+    const pagina = this.state.pagina;
+
+    const url = `https://pixabay.com/api/?key=12352300-07f3f5b2aa7969ce6a39f317f&q=${termino}&per_page=30&page=${pagina}`;
 
     // console.log(url);
     fetch(url)
@@ -22,10 +25,39 @@ class App extends Component {
 
   datosBusqueda = (termino) => {
     this.setState({
-      termino
+      termino : termino, 
+      pagina: 1
     }, () => {
         this.consultarAPI();   
     })
+  }
+
+  paginaAtras = () => {
+    // Leemos el state
+    let pagina = this.state.pagina;
+    
+    // SI es la pagina 1, no se puede retroceder
+    if (pagina === 1) return null;
+
+    // Se resta a la pagina nro X
+    pagina -= 1;
+    
+    // Agregar al state
+    this.setState({
+      pagina
+    }, () => {
+        this.consultarAPI();
+    });
+  }
+  paginaAdelante = () => {
+    let pagina = this.state.pagina;
+    pagina += 1;
+    
+    this.setState({
+      pagina
+    }, () => {
+      this.consultarAPI();
+    });
   }
   render() {
     return (
@@ -45,9 +77,11 @@ class App extends Component {
             </div>
           </div>
         </div>
-        <div className="row">
+        <div className="row justify-content-center">
           <Resultado
             imagenes={this.state.imagenes}
+            paginaAtras={this.paginaAtras}
+            paginaAdelante={this.paginaAdelante}
             
           />
 
