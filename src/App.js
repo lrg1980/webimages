@@ -9,7 +9,8 @@ class App extends Component {
     termino: '',
     imagenes: [],
     pagina: '',
-    cargando: false
+    cargando: false,
+    totalPaginas: ''
   }
 
   consultarAPI = async () => {
@@ -28,10 +29,12 @@ class App extends Component {
         return respuesta.json()
       } )
       .then(resultado => {
+        const totalPaginacion = Math.ceil(resultado.totalHits / 30);
         setTimeout(() => {
           this.setState({
             imagenes: resultado.hits,
-            cargando: false
+            cargando: false,
+            totalPaginas: totalPaginacion
           })
         }, 1000);
       })
@@ -65,7 +68,12 @@ class App extends Component {
     });
   }
   paginaAdelante = () => {
-    let pagina = this.state.pagina;
+    let {pagina} = this.state;
+    const { totalPaginas } = this.state;
+    
+    if (pagina === totalPaginas) return null;
+
+    // Sumar a la pagina actual
     pagina += 1;
     
     this.setState({
@@ -88,11 +96,14 @@ class App extends Component {
                     <div className="dot2"></div>
                   </div>
     } else {
-      resultado = <Resultado
-                    imagenes={this.state.imagenes}
-                    paginaAtras={this.paginaAtras}
-                    paginaAdelante={this.paginaAdelante}  
-                  />
+      resultado =
+        <Resultado
+          imagenes={this.state.imagenes}
+          paginaAtras={this.paginaAtras}
+          paginaAdelante={this.paginaAdelante}
+          pagina={this.state.totalPaginas}
+          totalPaginas={this.state.totalPaginas}
+        />
 
     }
       
