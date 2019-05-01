@@ -101,7 +101,7 @@ class App extends Component {
           imagenes={this.state.imagenes}
           paginaAtras={this.paginaAtras}
           paginaAdelante={this.paginaAdelante}
-          pagina={this.state.totalPaginas}
+          pagina={this.state.pagina}
           totalPaginas={this.state.totalPaginas}
         />
 
